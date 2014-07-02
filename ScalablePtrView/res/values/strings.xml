@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="app_name">ScalablePtrView</string>
+	
+    <string name="label_ptr">pull to refresh</string>
+    <string name="label_rtr">release to refresh</string>
+    <string name="label_ref">refreshing</string>
+</resources>
