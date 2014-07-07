@@ -5,4 +5,6 @@
     <string name="label_ptr">pull to refresh</string>
     <string name="label_rtr">release to refresh</string>
     <string name="label_ref">refreshing</string>
+    
+    <string name="pull_to_refresh_pull_label">下拉可以刷新...</string>
 </resources>

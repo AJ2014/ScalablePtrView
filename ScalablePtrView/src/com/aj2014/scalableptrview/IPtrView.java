@@ -12,5 +12,7 @@ public interface IPtrView {
 	 * 
 	 */
 	public void switchTo(EPtrState state);
+	public void onPull(int distance);
+	public boolean recover(int distance);
 	
 }
