@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="scale_header_normal_height">200dip</dimen>
+    <dimen name="page_content_margin_top">-200dip</dimen>
+</resources>

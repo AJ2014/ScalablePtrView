@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -118,12 +119,21 @@ public class ScalableImageView extends AbsScalableView {
 		mNormalSize = mCurSize;
 		mMaxSize = (int) (mCurSize * 1.5f);
 		mRefreshSize = (int) (mCurSize * 1.25f);
+		// 设置最大可向上margin的距离
+		MainActivity.minMargin = -mNormalSize;
 	}
 	
 	@Override
 	public void onRefreshComplete() {
 		setSizeTo(mNormalSize);
 		super.onRefreshComplete();
+	}
+	
+	public void setMarginTop(int margin) {
+		MarginLayoutParams mParams = (MarginLayoutParams) getLayoutParams();
+		mParams.topMargin = margin;
+		setLayoutParams(mParams);
+		invalidate();
 	}
 
 }
