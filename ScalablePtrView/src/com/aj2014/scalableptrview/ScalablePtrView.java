@@ -1,6 +1,7 @@
 package com.aj2014.scalableptrview;
 
 import com.aj2014.scalableptrview.PtrLoadingView.IRefreshCallback;
+import com.aj2014.scalableptrview.ScalableImageView.IRecoverCallback;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -111,6 +112,12 @@ public class ScalablePtrView extends RelativeLayout {
 	public void setRefreshCallback(IRefreshCallback callback) {
 		if (null != mScalableView) {
 			mScalableView.setRefreshCallback(callback);
+		}
+	}
+	
+	public void setRecoverCallback(IRecoverCallback callback) {
+		if (null != mScalableView) {
+			mScalableView.setRecoverCallback(callback);
 		}
 	}
 

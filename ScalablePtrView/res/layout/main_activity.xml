@@ -3,51 +3,29 @@
     xmlns:ScaleToRefresh="http://schemas.android.com/apk/res/com.aj2014.scalableptrview"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <RelativeLayout
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_page_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-        
-        <android.support.v4.view.ViewPager
-            android:id="@+id/main_page_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true" />
-        
-        <!-- <View 
-            android:id="@+id/cover_header"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/scale_header_normal_height"
-            android:layout_alignParentTop="true"
-            android:background="#00FFFF"/> -->
-        
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true" />
 
-        <com.aj2014.scalableptrview.ScalablePtrView
-	        android:id="@+id/scalable_ptr_view"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        ScaleToRefresh:imgHeight="@dimen/scale_header_normal_height"
-	        ScaleToRefresh:imgSrc="@drawable/bg_person_center_head"
-	        android:background="#80FFFF00" >
-	    </com.aj2014.scalableptrview.ScalablePtrView>
-        <LinearLayout
-            android:id="@+id/tab_container"
-            android:layout_width="match_parent"
-            android:layout_height="60dip"
-            android:layout_below="@id/scalable_ptr_view"
-            android:background="#FFFFFF"
-            android:orientation="horizontal" >
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <!-- <com.aj2014.scalableptrview.ScalablePtrView
+    <com.aj2014.scalableptrview.ScalablePtrView
         android:id="@+id/scalable_ptr_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         ScaleToRefresh:imgHeight="@dimen/scale_header_normal_height"
         ScaleToRefresh:imgSrc="@drawable/bg_person_center_head"
         android:background="#80FFFF00" >
-    </com.aj2014.scalableptrview.ScalablePtrView> -->
+    </com.aj2014.scalableptrview.ScalablePtrView>
+
+    <LinearLayout
+        android:id="@+id/tab_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/page_tab_height"
+        android:layout_below="@id/scalable_ptr_view"
+        android:background="#FFFFFF"
+        android:orientation="horizontal" >
+    </LinearLayout>
 
 </RelativeLayout>

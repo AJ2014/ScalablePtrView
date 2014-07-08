@@ -1,6 +1,7 @@
 package com.aj2014.scalableptrview;
 
 import com.aj2014.scalableptrview.PtrLoadingView.IRefreshCallback;
+import com.aj2014.scalableptrview.ScalableImageView.IRecoverCallback;
 import com.aj2014.scalableptrview.SmoothScroller.IScrollAction;
 
 import android.os.Bundle;
@@ -18,12 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements OnClickListener, IRefreshCallback {
+public class MainActivity extends FragmentActivity 
+	implements OnClickListener, IRefreshCallback, IRecoverCallback {
 
 	/**
 	 * custom banner view
 	 */
-    View mCoverHeader;
     ScalablePtrView mSPtrView;
     ViewPager mViewPager;
     /**
@@ -86,8 +87,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener, I
         setContentView(R.layout.main_activity);
         mViewPager = (ViewPager) findViewById(R.id.main_page_container);
         mSPtrView = (ScalablePtrView) findViewById(R.id.scalable_ptr_view);
-//        mCoverHeader = findViewById(R.id.cover_header);
         mTabGroup = (LinearLayout) findViewById(R.id.tab_container);
+        
+        mSPtrView.setRefreshCallback(this);
+        mSPtrView.setRecoverCallback(this);
         
         mHander = new Handler(getMainLooper());
         mScroller = SmoothScroller.getInstance();
@@ -96,9 +99,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, I
                 new SubFragment(0, null, mOnScrollListener, mSPtrView),
                 new SubFragment(1, null, mOnScrollListener, mSPtrView)
         };
-        
-//        ((SubFragment)mFragments[0]).setSPtrView(mSPtrView);
-//        ((SubFragment)mFragments[1]).setSPtrView(mSPtrView);
       
         LayoutParams lParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         lParams.weight = 1;
@@ -158,6 +158,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener, I
         });
         mViewPager.setOffscreenPageLimit(4);
         mViewPager.setCurrentItem(0);
+        
+        ViewServer.get(getApplicationContext()).addWindow(this);
 	}
 	
 	@Override
@@ -266,9 +268,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener, I
         margin = margin > maxMargin ? maxMargin : margin;
         margin = margin < minMargin ? minMargin : margin;
 
-//        ViewGroup.MarginLayoutParams mParams = (ViewGroup.MarginLayoutParams) mCoverHeader.getLayoutParams();
-//        mParams.topMargin = margin;
-//        mCoverHeader.setLayoutParams(mParams);
         if (null != mSPtrView) {
         	mSPtrView.setScalableViewMarginTop(margin);
         }
@@ -283,5 +282,17 @@ public class MainActivity extends FragmentActivity implements OnClickListener, I
         curMargin = margin;
         
     }
-    
+
+	@Override
+	public void scaleTo(int nextVal) {
+		Log.i("junjiang2", "scaleTo " + nextVal);
+		if (null != mFragments) {
+			SubFragment tmp = null;
+			for (Fragment fragment : mFragments) {
+				tmp = (SubFragment) fragment;
+				tmp.scaleListHeaderHeightTo(nextVal);
+			}
+		}
+	}
+
 }

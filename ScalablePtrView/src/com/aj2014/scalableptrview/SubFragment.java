@@ -150,5 +150,11 @@ public class SubFragment extends Fragment {
     		mListView.setSelectionFromTop(firstIndex, top);
     	}
     }
+    
+    public void scaleListHeaderHeightTo(int height) {
+    	if (null != mListView) {
+    		mListView.scaleHeaderTo(height);
+    	}
+    }
 
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="page_tab_height">60dip</dimen>
     <dimen name="scale_header_normal_height">200dip</dimen>
-    <dimen name="page_content_margin_top">-200dip</dimen>
+    <dimen name="list_header_normal_height">260dip</dimen>
 </resources>

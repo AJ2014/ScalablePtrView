@@ -18,6 +18,7 @@ public class ScalableImageView extends AbsScalableView {
 	private static final int BG_IMG_RID = R.drawable.bg_person_center_head;
 	private static final float SCALE_RATE = 0.5f;
 	private static final int DEF_SCALE_HEIGHT = 200;
+	private static int DEF_TAB_HEIGHT;
 	protected int mNormalSize;
 	protected int mMaxSize;
 	protected int mRefreshSize;
@@ -25,6 +26,15 @@ public class ScalableImageView extends AbsScalableView {
 	private Handler mHandler;
 	private ImageView mScalableImage;
 	private SmoothScroller mValueInsertor;
+	private IRecoverCallback mCallback;
+	
+	public void setRecoverCallback(IRecoverCallback callback) {
+		mCallback = callback;
+	}
+	
+	public static interface IRecoverCallback {
+		public void scaleTo(int nextVal);
+	}
 	
 	public ScalableImageView(Context context) {
 		super(context);
@@ -37,7 +47,7 @@ public class ScalableImageView extends AbsScalableView {
 	}
 
 	private void init(Context context, AttributeSet attrs) {
-		
+		DEF_TAB_HEIGHT = (int) context.getResources().getDimension(R.dimen.page_tab_height);
 		int scaleHeight = DEF_SCALE_HEIGHT;
 		int imgRid = BG_IMG_RID;
 		if (null != attrs) {
@@ -106,6 +116,10 @@ public class ScalableImageView extends AbsScalableView {
 		mScalableImage.setLayoutParams(gParams);
 		mScalableImage.invalidate();
 		mCurSize = height;
+		if (null != mCallback) {
+			Log.i("junjiang2", "setViewsHeight " + mCurSize);
+			mCallback.scaleTo(mCurSize + DEF_TAB_HEIGHT);
+		}
 	}
 	
 	@Override

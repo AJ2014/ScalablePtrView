@@ -6,6 +6,6 @@
 
     <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/scale_header_normal_height" />
+            android:layout_height="@dimen/list_header_normal_height" />
 
 </RelativeLayout>

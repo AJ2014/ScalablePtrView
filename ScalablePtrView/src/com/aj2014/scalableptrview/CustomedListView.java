@@ -140,7 +140,6 @@ public class CustomedListView extends ListView {
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		final int action = ev.getAction();
-//		Log.i("junjiang2", "dispatchTouchEvent " + action);
     	float distanceX = ev.getX() - lastMotionX;
     	distanceY = ev.getY() - lastMotionY;
     	lastMotionX = ev.getX();
@@ -164,62 +163,53 @@ public class CustomedListView extends ListView {
 		return super.dispatchTouchEvent(ev);
 	}
 	
-//	@Override
-//	public boolean onInterceptTouchEvent(MotionEvent ev) {
-//		boolean superRet = super.onInterceptTouchEvent(ev);
-//		Log.i("junjiang2", "list onInterceptTouchEvent ret = " + superRet);
-//		return true;
-//	}
-//	
-//	@Override
-//	public boolean onTouchEvent(MotionEvent ev) {
-//		boolean superRet = super.onTouchEvent(ev);
-//		
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		super.onInterceptTouchEvent(ev);
+		return true;
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent ev) {
+		boolean superRet = super.onTouchEvent(ev);
 //		final int action = ev.getAction();
-////		int distance = (int) (ev.getY() - lastMotionY);
-//		Log.i("junjiang2", "list onTouchEvent action = " + action);
-//		if (!isScalable((int) distanceY)) {
-//			return superRet;
+		
+		if (!isScalable((int) distanceY)) {
+			return superRet;
+		}
+		mSPtrView.onTouchEvent(ev);
+//		Log.i("junjiang2", "scale header by " + distanceY);
+//		if (MotionEvent.ACTION_MOVE == action) {
+//			scaleHeaderBy((int) distanceY);
 //		}
-//		Log.i("junjiang2", "list onTouchEvent actio2 = " + action);
-//		mSPtrView.onTouchEvent(ev);
-//		scaleHeaderBy((int) distanceY);
-////		switch (action) {
-////		case MotionEvent.ACTION_DOWN:
-////			lastMotionY = ev.getY();
-////			break;
-////			
-////		case MotionEvent.ACTION_MOVE:
-////			
-////			break;
-////
-////		default:
-////			break;
-////		}
-//		return true;
-//	}
-//	
-//	private boolean isScalable(int distance) {
-//		if (null == mHeader) {
-//			return false;
-//		}
-//		final int normalHeight = getHeightAtPosition(0);
-//		final int headerTop = mHeader.getTop();
-//		final int headerHeight = mHeader.getHeight();
-//		return headerTop == 0 
-//				&& (headerHeight == normalHeight && distance >= 0 
-//				|| headerHeight > normalHeight);
-//	}
-//	
-//	private void scaleHeaderBy(int distance) {
-//		if (!isScalable(distance)) {
-//			return;
-//		}
-//		final int newHeight = (int) (mHeader.getHeight() + distance * 0.5f);
-//		LayoutParams lParams = (LayoutParams) mHeader.getLayoutParams();
-//		lParams.height = newHeight;
-//		mHeader.setLayoutParams(lParams);
-//		mHeader.invalidate();
-//	}
+		return true;
+	}
+	
+	private boolean isScalable(int distance) {
+		if (null == mHeader) {
+			return false;
+		}
+		final int normalHeight = getHeightAtPosition(0);
+		final int headerTop = mHeader.getTop();
+		final int headerHeight = mHeader.getHeight();
+		return headerTop == 0 
+				&& (headerHeight == normalHeight && distance >= 0 
+				|| headerHeight > normalHeight);
+	}
+	
+	private void scaleHeaderBy(int distance) {
+		if (!isScalable(distance)) {
+			return;
+		}
+		final int newHeight = (int) (mHeader.getHeight() + distance * 0.5f);
+		scaleHeaderTo(newHeight);
+	}
+	
+	public void scaleHeaderTo(int height) {
+		LayoutParams lParams = (LayoutParams) mHeader.getLayoutParams();
+		lParams.height = height;
+		mHeader.setLayoutParams(lParams);
+		mHeader.invalidate();
+	}
 
 }
