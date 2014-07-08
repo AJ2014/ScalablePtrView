@@ -26,13 +26,13 @@ public class ScalableImageView extends AbsScalableView {
 	private Handler mHandler;
 	private ImageView mScalableImage;
 	private SmoothScroller mValueInsertor;
-	private IRecoverCallback mCallback;
+	private IScaleCallback mCallback;
 	
-	public void setRecoverCallback(IRecoverCallback callback) {
+	public void setScaleCallback(IScaleCallback callback) {
 		mCallback = callback;
 	}
 	
-	public static interface IRecoverCallback {
+	public static interface IScaleCallback {
 		public void scaleTo(int nextVal);
 	}
 	
@@ -118,7 +118,7 @@ public class ScalableImageView extends AbsScalableView {
 		mScalableImage.invalidate();
 		mCurSize = height;
 		if (null != mCallback) {
-			Log.i("junjiang2", "setViewsHeight " + mCurSize);
+//			Log.i("junjiang2", "setViewsHeight " + mCurSize);
 			mCallback.scaleTo(mCurSize + DEF_TAB_HEIGHT);
 		}
 	}

@@ -133,54 +133,24 @@ public class CustomedListView extends ListView {
 	 * when the viewPager contains listView in the sub fragment
 	 */
 	
-	float lastMotionX = 0;
-	float lastMotionY = 0;
-	float distanceY = 0;
-	
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		final int action = ev.getAction();
-    	float distanceX = ev.getX() - lastMotionX;
-    	distanceY = ev.getY() - lastMotionY;
-    	lastMotionX = ev.getX();
-    	lastMotionY = ev.getY();
-    	switch(action) {
-	    	case MotionEvent.ACTION_MOVE: {
-	    		if (Math.abs(distanceY) > Math.abs(distanceX)) {
-	    			/**
-	    			 * intercept the motion
-	    			 */
-	    			requestDisallowInterceptTouchEvent(true);
-	    		} else {
-	    			/**
-	    			 * dispatch the motion to it's parent
-	    			 */
-	    			return false;
-	    		}
-	    		
-	    	}
-    	}
-		return super.dispatchTouchEvent(ev);
-	}
-	
-	@Override
-	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		super.onInterceptTouchEvent(ev);
-		/**
-		 * listView做为主控视图 不再把事件传递下去
-		 */
-		return true;
-	}
-	
+	private float lastMotionY = 0;
+	private float distanceY = 0;	
 	private boolean sendActionDown = false;
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+		if (MotionEvent.ACTION_DOWN == ev.getAction()) {
+			lastMotionY = ev.getY();
+			return super.onTouchEvent(ev);
+		}
+		distanceY = ev.getY() - lastMotionY;
+		lastMotionY = ev.getY();
 		boolean scalable = isScalable((int) distanceY);
 		if (!scalable) {
 			/**
 			 * 未进入缩放的范围，就由listView本身来处理
 			 */
+			Log.i("junjiang2", "customlistview onTouchEvent " + ev.getAction());
 			return super.onTouchEvent(ev);
 		}
 		if (!sendActionDown) {
@@ -213,7 +183,8 @@ public class CustomedListView extends ListView {
 		final int normalHeight = getHeightAtPosition(0);
 		final int headerTop = mHeader.getTop();
 		final int headerHeight = mHeader.getHeight();
-		Log.i("junjiang2", String.format("scalable top:%d height:%d normal:%d distance:%d", headerTop, headerHeight, normalHeight, distance));
+//		Log.i("junjiang2", String.format("scalable top:%d height:%d normal:%d distance:%d", 
+//				headerTop, headerHeight, normalHeight, distance));
 		return headerTop == 0 
 				&& (headerHeight == normalHeight && distance >= 0 
 				|| headerHeight > normalHeight);

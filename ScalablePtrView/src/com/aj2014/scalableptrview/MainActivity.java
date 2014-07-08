@@ -1,7 +1,7 @@
 package com.aj2014.scalableptrview;
 
 import com.aj2014.scalableptrview.PtrLoadingView.IRefreshCallback;
-import com.aj2014.scalableptrview.ScalableImageView.IRecoverCallback;
+import com.aj2014.scalableptrview.ScalableImageView.IScaleCallback;
 import com.aj2014.scalableptrview.SmoothScroller.IScrollAction;
 
 import android.os.Bundle;
@@ -19,13 +19,24 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
+/**
+ * TODO 遗留的3个问题：
+ * 1、fling比较卡；
+ * 2、考虑ListView内容为空的情况；
+ * 3、考虑Header有自定义视图的情况
+ * @author Administrator
+ *
+ */
 public class MainActivity extends FragmentActivity 
-	implements OnClickListener, IRefreshCallback, IRecoverCallback {
+	implements OnClickListener, IRefreshCallback, IScaleCallback {
 
 	/**
 	 * custom banner view
 	 */
     ScalablePtrView mSPtrView;
+    /**
+     * content container
+     */
     ViewPager mViewPager;
     /**
      * tab view container
@@ -90,7 +101,7 @@ public class MainActivity extends FragmentActivity
         mTabGroup = (LinearLayout) findViewById(R.id.tab_container);
         
         mSPtrView.setRefreshCallback(this);
-        mSPtrView.setRecoverCallback(this);
+        mSPtrView.setScaleCallback(this);
         
         mHander = new Handler(getMainLooper());
         mScroller = SmoothScroller.getInstance();
@@ -198,7 +209,7 @@ public class MainActivity extends FragmentActivity
         @Override
         public void CustomedOnScrollStateChanged(CustomedListView absListView, int state) {
         	
-        	Log.i("junjiang2", "CustomedOnScrollStateChanged=" + state);
+        	Log.i("junjiang2", "customlistview CustomedOnScrollStateChanged=" + state);
         	
         	final int fIndex = absListView.getFIndex();
         	if (SCROLL_STATE_IDLE == state && 0 != marginDist && mCurPageIndex == fIndex) {
@@ -239,7 +250,7 @@ public class MainActivity extends FragmentActivity
             final int distanceFromTop = absListView.getDistanceFromTop(first);
             final int top = child.getTop();
             scrollDistance = distanceFromTop - top;
-            Log.i("junjiang2", "CustomedOnScroll =" + scrollDistance + " distanceFromTop =" + distanceFromTop);
+            Log.i("junjiang2", "customlistview CustomedOnScroll =" + scrollDistance + " distanceFromTop =" + distanceFromTop);
             //更新TabView margin
             setViewMarginTop(-scrollDistance);
         }

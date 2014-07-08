@@ -1,7 +1,7 @@
 package com.aj2014.scalableptrview;
 
 import com.aj2014.scalableptrview.PtrLoadingView.IRefreshCallback;
-import com.aj2014.scalableptrview.ScalableImageView.IRecoverCallback;
+import com.aj2014.scalableptrview.ScalableImageView.IScaleCallback;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -25,10 +25,6 @@ public class ScalablePtrView extends RelativeLayout {
 	private ScalableImageView mScalableView;
 	
 	private int mTouchSlope;
-	/**
-	 * y 方向上滑动距离
-	 */
-	private int mScrollY;
 	
 	public ScalablePtrView(Context context) {
 		super(context);
@@ -54,7 +50,6 @@ public class ScalablePtrView extends RelativeLayout {
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		final int action = ev.getAction();
-		int distance = (int) (ev.getY() - mLastMotionY);
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
 			mLastMotionY = ev.getY();
@@ -64,9 +59,8 @@ public class ScalablePtrView extends RelativeLayout {
 		default:
 			break;
 		}
-		boolean isOutofRange = false;//isOutofRange(distance);
-		Log.i("junjiang2", "onInterceptTouchEvent " + distance);
-		return isOutofRange;
+		
+		return false;
 	}
 	
 	@Override
@@ -107,38 +101,39 @@ public class ScalablePtrView extends RelativeLayout {
 		return true;
 	}
 	
-	private boolean isOutofRange(int distance) {
-		/**
-		 * 1、非缩放尺寸时上滑 
-		 * 2、下滑未达到缩放开始临界值
-		 */
-		if (distance < 0 && mScalableView.isOutofRange()) {
-			return true;
-		}
-		if (distance > 0 && mScrollY < 0) {
-			return true;
-		}
-		return false;
-	}
-	
+	/**
+	 * 设置下拉刷新回调
+	 * @param callback
+	 */
 	public void setRefreshCallback(IRefreshCallback callback) {
 		if (null != mScalableView) {
 			mScalableView.setRefreshCallback(callback);
 		}
 	}
 	
-	public void setRecoverCallback(IRecoverCallback callback) {
+	/**
+	 * 设置头视图缩放回调
+	 * @param callback
+	 */
+	public void setScaleCallback(IScaleCallback callback) {
 		if (null != mScalableView) {
-			mScalableView.setRecoverCallback(callback);
+			mScalableView.setScaleCallback(callback);
 		}
 	}
 
+	/**
+	 * 数据刷新结束回调
+	 */
 	public void onRefreshComplete() {
 		if (null != mScalableView) {
 			mScalableView.onRefreshComplete();
 		}
 	}
 	
+	/**
+	 * 设置头视图margin top
+	 * @param margin
+	 */
 	public void setScalableViewMarginTop(int margin) {
 		if (null != mScalableView) {
 			mScalableView.setMarginTop(margin);

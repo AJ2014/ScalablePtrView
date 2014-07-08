@@ -170,7 +170,6 @@ public class PtrLoadingView extends AbsPtrView {
 	
 	@Override
 	public void onPull(int distance) {
-//		Log.i("junjiang2", "onPull=" + distance);
 		mCurMargin = (int) (mCurMargin + distance);
 		mCurMargin = mCurMargin < mNormalMargin ? mNormalMargin : mCurMargin;
 		mCurMargin = mCurMargin > mMaxMargin ? mMaxMargin : mCurMargin;
