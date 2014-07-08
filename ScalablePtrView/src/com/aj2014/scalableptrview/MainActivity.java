@@ -197,6 +197,9 @@ public class MainActivity extends FragmentActivity
     IOnScrollListener mOnScrollListener = new IOnScrollListener() {
         @Override
         public void CustomedOnScrollStateChanged(CustomedListView absListView, int state) {
+        	
+        	Log.i("junjiang2", "CustomedOnScrollStateChanged=" + state);
+        	
         	final int fIndex = absListView.getFIndex();
         	if (SCROLL_STATE_IDLE == state && 0 != marginDist && mCurPageIndex == fIndex) {
         		SubFragment cFragment = null; 

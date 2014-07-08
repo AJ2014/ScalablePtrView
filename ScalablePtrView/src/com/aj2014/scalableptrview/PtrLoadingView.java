@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -163,12 +164,13 @@ public class PtrLoadingView extends AbsPtrView {
 		
 		mHandler = new Handler(context.getMainLooper());
 		mScroller = SmoothScroller.getInstance();
+		
 	}
 	
 	
 	@Override
 	public void onPull(int distance) {
-		Log.i("junjiang2", "onPull=" + distance);
+//		Log.i("junjiang2", "onPull=" + distance);
 		mCurMargin = (int) (mCurMargin + distance);
 		mCurMargin = mCurMargin < mNormalMargin ? mNormalMargin : mCurMargin;
 		mCurMargin = mCurMargin > mMaxMargin ? mMaxMargin : mCurMargin;
@@ -189,7 +191,8 @@ public class PtrLoadingView extends AbsPtrView {
 		boolean releaseToRefresh = releaseToRefresh();
 		int destMargin = releaseToRefresh ? mRefreshMargin : mNormalMargin;
 		if (destMargin != mCurMargin) {
-			smoothMarginTo(destMargin, true);
+			Log.i("junjiang2", "resize from " + mCurMargin + " to " + destMargin);
+			smoothMarginTo(destMargin, releaseToRefresh);
 		}
 		return super.recover(distance);
 	}
@@ -225,11 +228,13 @@ public class PtrLoadingView extends AbsPtrView {
 	}
 	
 	public void initMargins(int scaleDistance) {
+		final int margin = -getHeight();
 		mNormalMargin = (int) (-scaleDistance / 4f);
+		mNormalMargin = mNormalMargin > margin ? margin : mNormalMargin;
 		mRefreshMargin = -mNormalMargin;
-		mMaxMargin = (int) (scaleDistance / 2f);
+		mMaxMargin = (int) (-mNormalMargin * 2);
 		mCurMargin = mNormalMargin;
 		Log.i("junjiang2", String.format("normal:%d refresh:%d max:%d", mNormalMargin, mRefreshMargin, mMaxMargin));
 	}
-	
+
 }

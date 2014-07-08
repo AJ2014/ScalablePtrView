@@ -72,22 +72,34 @@ public class ScalablePtrView extends RelativeLayout {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		final int action = event.getAction();
-		Log.i("junjiang2", "onTouchEvent " + action);
 		int distance = (int) (event.getY() - mLastMotionY);
+		Log.i("junjiang2", "onTouchEvent " + action + " distance = " + distance);
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
 			mLastMotionY = event.getY();
 			mStartMotionY = event.getY();
-			Log.i("junjiang2", "mStartMotionY = " + mStartMotionY);
 			break;
 		case MotionEvent.ACTION_MOVE:
 			mScalableView.scaleTo(distance);
 			mLastMotionY = event.getY();
+			/**
+			 * 因为是listview主动调的这个回调
+			 * DOWN事件有可能传不进来
+			 */
+			if (mStartMotionY == 0) {
+				mStartMotionY = event.getY();
+			}
 			break;
 		case MotionEvent.ACTION_UP:
 			distance = (int) (event.getY() - mStartMotionY);
-			mScalableView.recover(distance);
+			/**
+			 * 判断lastMotionY是否为0来规避单击的情况
+			 */
+			if (mLastMotionY != 0 && distance != 0) { 
+				mScalableView.recover(distance);
+			}
 			mStartMotionY = 0;
+			mLastMotionY = 0;
 			break;
 		default:
 			break;

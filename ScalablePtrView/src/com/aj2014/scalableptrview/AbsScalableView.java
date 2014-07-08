@@ -48,7 +48,6 @@ public abstract class AbsScalableView extends FrameLayout implements IScalableVi
 	public void recover(int distance) {
 		if (null != mPtrView) {
 			mPtrView.recover(distance);
-			
 		}
 	}
 	
@@ -81,6 +80,7 @@ public abstract class AbsScalableView extends FrameLayout implements IScalableVi
 	public void onRefreshComplete() {
 		if (null != mPtrView) {
 			mPtrView.onRefreshComplete();
+			mRefresh = mPtrView.releaseToRefresh();
 		}
 	}
 }

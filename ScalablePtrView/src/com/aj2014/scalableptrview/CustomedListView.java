@@ -166,23 +166,44 @@ public class CustomedListView extends ListView {
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		super.onInterceptTouchEvent(ev);
+		/**
+		 * listView做为主控视图 不再把事件传递下去
+		 */
 		return true;
 	}
 	
+	private boolean sendActionDown = false;
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		boolean superRet = super.onTouchEvent(ev);
-//		final int action = ev.getAction();
-		
-		if (!isScalable((int) distanceY)) {
-			return superRet;
+		boolean scalable = isScalable((int) distanceY);
+		if (!scalable) {
+			/**
+			 * 未进入缩放的范围，就由listView本身来处理
+			 */
+			return super.onTouchEvent(ev);
 		}
-		mSPtrView.onTouchEvent(ev);
-//		Log.i("junjiang2", "scale header by " + distanceY);
-//		if (MotionEvent.ACTION_MOVE == action) {
-//			scaleHeaderBy((int) distanceY);
-//		}
+		if (!sendActionDown) {
+			/**
+			 * 开始缩放的临界点
+			 * 需要传入一个DOWN事件，让scalablePtrView记录初始位置
+			 */
+			ev.setAction(MotionEvent.ACTION_DOWN);
+			sendMotionEvent(ev);
+			sendActionDown = true;
+		} else {
+			sendMotionEvent(ev);
+		}
+		if (MotionEvent.ACTION_UP == ev.getAction()) {
+			sendActionDown = false;
+		}
 		return true;
+	}
+	
+	private void sendMotionEvent(MotionEvent ev) {
+		if (null != mSPtrView) {
+			mSPtrView.onTouchEvent(ev);
+		}
 	}
 	
 	private boolean isScalable(int distance) {
@@ -192,6 +213,7 @@ public class CustomedListView extends ListView {
 		final int normalHeight = getHeightAtPosition(0);
 		final int headerTop = mHeader.getTop();
 		final int headerHeight = mHeader.getHeight();
+		Log.i("junjiang2", String.format("scalable top:%d height:%d normal:%d distance:%d", headerTop, headerHeight, normalHeight, distance));
 		return headerTop == 0 
 				&& (headerHeight == normalHeight && distance >= 0 
 				|| headerHeight > normalHeight);

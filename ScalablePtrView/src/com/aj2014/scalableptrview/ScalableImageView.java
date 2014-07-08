@@ -88,6 +88,7 @@ public class ScalableImageView extends AbsScalableView {
 	@Override
 	public void recover(int distance) {
 		int destSize = mRefresh ? mRefreshSize : mNormalSize;
+		Log.i("junjiang2", "distance=" + distance + "resize from " + mCurSize + " to " + destSize);
 		if (mCurSize != destSize && (!mRefresh || mCurSize > destSize)) {
 			setSizeTo(destSize);
 		}
