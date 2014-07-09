@@ -26,6 +26,8 @@ public class ScalablePtrView extends RelativeLayout {
 	
 	private int mTouchSlope;
 	
+	public static int mCurTopMargin = 0, mMinTopMargin, mMaxTopMargin = 0, mMarginDist;
+	
 	public ScalablePtrView(Context context) {
 		super(context);
 		init(context, null);
@@ -139,5 +141,42 @@ public class ScalablePtrView extends RelativeLayout {
 			mScalableView.setMarginTop(margin);
 		}
 	}
+	
+	/**
+	 * 头视图推出上部 TAB视图置顶
+	 * @return
+	 */
+	public boolean topInvisible() {
+		return mCurTopMargin == mMinTopMargin;
+	}
+	
+	public boolean isOutofRange() {
+		if (null == mScalableView) {
+			return false;
+		}
+		return mScalableView.isOutofRange();
+	}
+	
+	/**
+	 * 设置头视图top margin
+	 * @param margin
+	 */
+	public void setViewMarginTop(int margin) {
+
+        margin = margin > mMaxTopMargin ? mMaxTopMargin : margin;
+        margin = margin < mMinTopMargin ? mMinTopMargin : margin;
+
+        setScalableViewMarginTop(margin);
+        
+        int distM = mCurTopMargin - margin;
+        
+        // used to sync the sibling fragments' list
+        if (distM != 0) {
+        	mMarginDist += distM;
+        }
+        
+        mCurTopMargin = margin;
+        
+    }
 	
 }

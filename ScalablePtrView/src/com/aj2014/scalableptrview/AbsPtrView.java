@@ -2,6 +2,7 @@ package com.aj2014.scalableptrview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 public abstract class AbsPtrView extends FrameLayout implements IPtrView {
@@ -29,11 +30,11 @@ public abstract class AbsPtrView extends FrameLayout implements IPtrView {
 	
 	@Override
 	public void switchTo(EPtrState state) {
+//			Log.i("junjiang2", "onPageSelected switchTo " + state);
 		switch (state) {
 		case PULL_TO_REFRESH:
 			doPullToRefresh();
 			break;
-
 		case RELEASE_TO_REFRESH:
 			doReleaseToRefresh();
 			break;

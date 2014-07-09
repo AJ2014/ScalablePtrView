@@ -108,7 +108,7 @@ public class ScalableImageView extends AbsScalableView {
 	@Override
 	public boolean isOutofRange() {
 		boolean superOut = super.isOutofRange();
-		return superOut && mCurSize == mNormalSize;
+		return superOut && mCurSize > mNormalSize;
 	}
 	
 	private void setViewsHeight(View view, int height) {
@@ -135,7 +135,7 @@ public class ScalableImageView extends AbsScalableView {
 		mMaxSize = (int) (mCurSize * 1.5f);
 		mRefreshSize = (int) (mCurSize * 1.25f);
 		// 设置最大可向上margin的距离
-		MainActivity.minMargin = -mNormalSize;
+		ScalablePtrView.mMinTopMargin = -mNormalSize;
 	}
 	
 	@Override

@@ -223,7 +223,7 @@ public class PtrLoadingView extends AbsPtrView {
 
 	@Override
 	public boolean isOutofRange() {
-		return mCurMargin == mNormalMargin;
+		return mCurMargin > mNormalMargin;
 	}
 	
 	public void initMargins(int scaleDistance) {

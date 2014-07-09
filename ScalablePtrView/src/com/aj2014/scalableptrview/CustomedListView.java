@@ -132,19 +132,55 @@ public class CustomedListView extends ListView {
 	 * deal with the motion event dispatch
 	 * when the viewPager contains listView in the sub fragment
 	 */
-	
+	private float lastMotionX = 0;
+	private float lastMotionY0 = 0;
 	private float lastMotionY = 0;
+	private float distanceX = 0;
 	private float distanceY = 0;	
 	private boolean sendActionDown = false;
+	
+//	@Override
+//	public boolean dispatchTouchEvent(MotionEvent ev) {
+//		final int action = ev.getAction();
+//    	float distanceX = ev.getX() - lastMotionX;
+//    	float distanceY = ev.getY() - lastMotionY0;
+//    	lastMotionX = ev.getX();
+//    	lastMotionY0 = ev.getY();
+//    	switch(action) {
+//	    	case MotionEvent.ACTION_MOVE: {
+//	    		if (Math.abs(distanceY) > Math.abs(distanceX)) {
+//	    			/**
+//	    			 * intercept the motion
+//	    			 */
+//	    			requestDisallowInterceptTouchEvent(true);
+//	    		} 
+////	    		else {
+////	    			/**
+////	    			 * dispatch the motion to it's parent
+////	    			 */
+////	    			return false;
+////	    		}
+//	    		
+//	    	}
+//    	}
+//		return super.dispatchTouchEvent(ev);
+//	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		if (MotionEvent.ACTION_DOWN == ev.getAction()) {
+			lastMotionX = ev.getX();
 			lastMotionY = ev.getY();
 			return super.onTouchEvent(ev);
 		}
+		distanceX = ev.getX() - lastMotionX;
 		distanceY = ev.getY() - lastMotionY;
+		lastMotionX = ev.getX();
 		lastMotionY = ev.getY();
+		if (Math.abs(distanceX) > Math.abs(distanceY)) {
+			Log.i("junjiang2", String.format("distanceX:%f distanceY:%f", distanceX, distanceY));
+			return false;
+		}
 		boolean scalable = isScalable((int) distanceY);
 		if (!scalable) {
 			/**

@@ -83,4 +83,11 @@ public abstract class AbsScalableView extends FrameLayout implements IScalableVi
 			mRefresh = mPtrView.releaseToRefresh();
 		}
 	}
+	
+	protected boolean isRefreshing() {
+		if (null == mPtrView) {
+			return false;
+		}
+		return mPtrView.refreshing();
+	}
 }

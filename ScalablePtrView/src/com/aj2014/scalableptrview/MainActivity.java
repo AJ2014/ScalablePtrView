@@ -3,6 +3,7 @@ package com.aj2014.scalableptrview;
 import com.aj2014.scalableptrview.PtrLoadingView.IRefreshCallback;
 import com.aj2014.scalableptrview.ScalableImageView.IScaleCallback;
 import com.aj2014.scalableptrview.SmoothScroller.IScrollAction;
+import com.aj2014.scalableptrview.SmoothScroller.OnSmoothScrollFinishedListener;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +45,6 @@ public class MainActivity extends FragmentActivity
      */
     LinearLayout mTabGroup;
     
-    public static int curMargin = 0, minMargin, maxMargin = 0;
     /**
      * current fragment index
      */
@@ -59,14 +60,6 @@ public class MainActivity extends FragmentActivity
      * auto scroll invoked by page select callback 
      */
     boolean mIsAutoScroll = false;
-    /**
-     * current fragment's listView's scroll distance
-     */
- 	int scrollDistance = 0;
- 	/**
- 	 * current margin changed range, used to sync the listView's scroll
- 	 */
- 	int marginDist = 0;
     
     @Override
     public void onClick(View v) {
@@ -126,47 +119,7 @@ public class MainActivity extends FragmentActivity
         
         mViewPager.setAdapter(new CustomFragmentPagerAdapter(fManager, mFragments));
 
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int curPage, float offsetRate, int offsetPix) {
-            }
-
-            @Override
-            public void onPageSelected(final int i) {
-                if (i != mCurPageIndex) {
-                	// 若跳转到未初始化的fragment?
-                	final int preIndex = mCurPageIndex;
-                	mCurPageIndex = i;
-                	if (curMargin == minMargin) {// 若Tab已经置顶 
-                		/**
-                		 * reset the current page 
-                		 */
-                		reAdjustSiblings(i);
-                		reAdjustSiblings(preIndex < i ? i + 1 : i - 1);
-                	} else {// 否则第i页执行autoScroll
-                		mIsAutoScroll = true;
-                		if (((SubFragment)mFragments[i]).requestAdjust(0, curMargin)) {
-                			((SubFragment)mFragments[i]).scrollListBy(-(minMargin - curMargin));
-                		} else {// 若已经scroll出范围
-                			setSiblingSelections(preIndex);
-                			setSiblingSelections(i);
-                			((SubFragment)mFragments[i]).requestAdjust(0, curMargin);
-                			mScroller.smoothScroll(mHander, curMargin, minMargin, new IScrollAction() {
-								@Override
-								public void actScroll(int nextVal) {
-									setViewMarginTop(nextVal);
-								}
-							}, null);
-                		}
-                	}
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
-        });
+        mViewPager.setOnPageChangeListener(mOnPageCnangeListener);
         mViewPager.setOffscreenPageLimit(4);
         mViewPager.setCurrentItem(0);
         
@@ -186,14 +139,14 @@ public class MainActivity extends FragmentActivity
 			public void run() {
 				mSPtrView.onRefreshComplete();
 			}
-		}, 1000l);
+		}, 2000l);
 	}
 
 	private void reAdjustSiblings(int position) {
 		SubFragment cFragment = null; 
 		if (position >= 0 && position < mFragments.length) {
 			cFragment = (SubFragment) mFragments[position];
-			cFragment.requestAdjust(0, minMargin);
+			cFragment.requestAdjust(0, mSPtrView.mMinTopMargin);
 		}
 	}
 	
@@ -201,18 +154,70 @@ public class MainActivity extends FragmentActivity
 		SubFragment cFragment = null; 
 		if (position >= 0 && position < mFragments.length) {
 			cFragment = (SubFragment) mFragments[position];
-			cFragment.setSelectionFromTop(0, minMargin);
+			cFragment.setSelectionFromTop(0, mSPtrView.mMinTopMargin);
 		}
 	}
+	
+	private OnPageChangeListener mOnPageCnangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int curPage, float offsetRate, int offsetPix) {
+        }
+
+        @Override
+        public void onPageSelected(final int i) {
+            if (i != mCurPageIndex && !mSPtrView.isOutofRange()) {
+            	// 若跳转到未初始化的fragment?
+            	final int preIndex = mCurPageIndex;
+            	mCurPageIndex = i;
+            	if (mSPtrView.topInvisible()) {// 若Tab已经置顶 
+            		Log.i("junjiang2", "onPageSelected reAdjustSiblings ");
+            		/**
+            		 * reset the current page 
+            		 */
+            		reAdjustSiblings(i);
+            		reAdjustSiblings(preIndex < i ? i + 1 : i - 1);
+            	} else {// 否则第i页执行autoScroll
+            		Log.i("junjiang2", "onPageSelected setViewMarginTop ");
+            		mIsAutoScroll = true;
+            		SubFragment fragment = (SubFragment)mFragments[i];
+            		if (fragment.requestAdjust(0, mSPtrView.mCurTopMargin)) {
+            			Log.i("junjiang2", "onPageSelected setViewMarginTop 1");
+            			setSiblingSelections(preIndex);
+            			fragment.scrollListBy(-(mSPtrView.mMinTopMargin - mSPtrView.mCurTopMargin));
+            		} else {// 若已经scroll出范围
+            			setSiblingSelections(preIndex);
+            			setSiblingSelections(i);
+            			fragment.requestAdjust(0, mSPtrView.mCurTopMargin);
+            			mScroller.smoothScroll(mHander, mSPtrView.mCurTopMargin, mSPtrView.mMinTopMargin, 
+            					new IScrollAction() {
+									@Override
+									public void actScroll(int nextVal) {
+										mSPtrView.setViewMarginTop(nextVal);
+									}
+								}, new OnSmoothScrollFinishedListener() {
+									
+									@Override
+									public void onSmoothScrollFinished() {
+										setSiblingSelections(preIndex);
+									}
+								});
+            		}
+            	}
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int i) {
+
+        }
+    };
 	
     IOnScrollListener mOnScrollListener = new IOnScrollListener() {
         @Override
         public void CustomedOnScrollStateChanged(CustomedListView absListView, int state) {
         	
-        	Log.i("junjiang2", "customlistview CustomedOnScrollStateChanged=" + state);
-        	
         	final int fIndex = absListView.getFIndex();
-        	if (SCROLL_STATE_IDLE == state && 0 != marginDist && mCurPageIndex == fIndex) {
+        	if (SCROLL_STATE_IDLE == state && 0 != mSPtrView.mMarginDist && mCurPageIndex == fIndex) {
         		SubFragment cFragment = null; 
         		if (mIsAutoScroll) {
         			// 若是pageSelect触发的scroll
@@ -227,14 +232,14 @@ public class MainActivity extends FragmentActivity
         			
         			if (leftPagePos >= 0) {
         				cFragment = (SubFragment) mFragments[leftPagePos];
-        				cFragment.scrollListBy(marginDist, 1);
+        				cFragment.scrollListBy(mSPtrView.mMarginDist, 1);
         			}
         			if (rightPagePos < mFragments.length) {
         				cFragment = (SubFragment) mFragments[rightPagePos];
-        				cFragment.scrollListBy(marginDist, 1);
+        				cFragment.scrollListBy(mSPtrView.mMarginDist, 1);
         			}
         		}
-        		marginDist = 0;
+        		mSPtrView.mMarginDist = 0;
         	}
         }
 
@@ -249,10 +254,7 @@ public class MainActivity extends FragmentActivity
             //计算List scroll的距离
             final int distanceFromTop = absListView.getDistanceFromTop(first);
             final int top = child.getTop();
-            scrollDistance = distanceFromTop - top;
-            Log.i("junjiang2", "customlistview CustomedOnScroll =" + scrollDistance + " distanceFromTop =" + distanceFromTop);
-            //更新TabView margin
-            setViewMarginTop(-scrollDistance);
+            mSPtrView.setViewMarginTop(top - distanceFromTop);
         }
     };
 
@@ -277,29 +279,8 @@ public class MainActivity extends FragmentActivity
         
     }
 
-    private void setViewMarginTop(int margin) {
-
-        margin = margin > maxMargin ? maxMargin : margin;
-        margin = margin < minMargin ? minMargin : margin;
-
-        if (null != mSPtrView) {
-        	mSPtrView.setScalableViewMarginTop(margin);
-        }
-        
-        int distM = curMargin - margin;
-        
-        // used to sync the sibling fragments' list
-        if (distM != 0) {
-        	marginDist += distM;
-        }
-        
-        curMargin = margin;
-        
-    }
-
 	@Override
 	public void scaleTo(int nextVal) {
-		Log.i("junjiang2", "scaleTo " + nextVal);
 		if (null != mFragments) {
 			SubFragment tmp = null;
 			for (Fragment fragment : mFragments) {
