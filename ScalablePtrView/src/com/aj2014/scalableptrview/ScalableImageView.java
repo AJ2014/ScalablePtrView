@@ -118,7 +118,7 @@ public class ScalableImageView extends AbsScalableView {
 		mScalableImage.invalidate();
 		mCurSize = height;
 		if (null != mCallback) {
-//			Log.i("junjiang2", "setViewsHeight " + mCurSize);
+			Log.i("ScalableImageView", "setViewsHeight " + mCurSize);
 			mCallback.scaleTo(mCurSize + DEF_TAB_HEIGHT);
 		}
 	}
@@ -148,6 +148,7 @@ public class ScalableImageView extends AbsScalableView {
 		MarginLayoutParams mParams = (MarginLayoutParams) getLayoutParams();
 		mParams.topMargin = margin;
 		setLayoutParams(mParams);
+		Log.i("ScalableImageView", "setMarginTop " + margin);
 		invalidate();
 	}
 

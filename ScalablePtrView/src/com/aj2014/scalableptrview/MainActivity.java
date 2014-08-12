@@ -254,7 +254,9 @@ public class MainActivity extends FragmentActivity
             //º∆À„List scrollµƒæ‡¿Î
             final int distanceFromTop = absListView.getDistanceFromTop(first);
             final int top = child.getTop();
-            mSPtrView.setViewMarginTop(top - distanceFromTop);
+            final int scrollDist = top - distanceFromTop;
+            mSPtrView.setViewMarginTop(scrollDist);
+//            scrollListBy(scrollDist);
         }
     };
 
@@ -286,6 +288,17 @@ public class MainActivity extends FragmentActivity
 			for (Fragment fragment : mFragments) {
 				tmp = (SubFragment) fragment;
 				tmp.scaleListHeaderHeightTo(nextVal);
+			}
+		}
+	}
+	
+	public void scrollListBy(int distance) {
+		if (null != mFragments) {
+			SubFragment tmp = null;
+			for (int i = 0; i < mFragments.length; i++) {
+				tmp = (SubFragment) mFragments[i];
+				if (i != mCurPageIndex)
+				tmp.scrollListBy(distance, 1);
 			}
 		}
 	}

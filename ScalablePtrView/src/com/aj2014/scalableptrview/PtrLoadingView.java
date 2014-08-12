@@ -198,7 +198,7 @@ public class PtrLoadingView extends AbsPtrView {
 	
 	public void onRefreshComplete() {
 		final int destMargin = mNormalMargin;
-		if (destMargin != mCurMargin) {
+		if (destMargin != mCurMargin && mCurMargin >= mRefreshMargin) {
 			smoothMarginTo(destMargin, false);
 		}
 	}

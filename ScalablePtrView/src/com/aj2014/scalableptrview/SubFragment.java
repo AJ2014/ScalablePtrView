@@ -151,5 +151,9 @@ public class SubFragment extends Fragment {
     		mListView.scaleHeaderTo(height);
     	}
     }
+    
+    public int getHeaderTop() {
+    		return mListView.mHeader.getTop();
+    }
 
 }

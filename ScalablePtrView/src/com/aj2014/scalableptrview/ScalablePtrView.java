@@ -128,6 +128,7 @@ public class ScalablePtrView extends RelativeLayout {
 	 */
 	public void onRefreshComplete() {
 		if (null != mScalableView) {
+			Log.i("ScalableImageView", "onRefreshComplete ----");
 			mScalableView.onRefreshComplete();
 		}
 	}
@@ -178,5 +179,12 @@ public class ScalablePtrView extends RelativeLayout {
         mCurTopMargin = margin;
         
     }
+	
+	public boolean isRefreshing() {
+		if (null != mScalableView) {
+			return mScalableView.isRefreshing();
+		}
+		return false;
+	}
 	
 }

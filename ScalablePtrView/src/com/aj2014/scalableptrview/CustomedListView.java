@@ -25,7 +25,7 @@ public class CustomedListView extends ListView {
     /**
      * added header view
      */
-    private View mHeader;
+    public View mHeader;
     
     private ScalablePtrView mSPtrView;
     /**
@@ -133,38 +133,11 @@ public class CustomedListView extends ListView {
 	 * when the viewPager contains listView in the sub fragment
 	 */
 	private float lastMotionX = 0;
-	private float lastMotionY0 = 0;
 	private float lastMotionY = 0;
 	private float distanceX = 0;
 	private float distanceY = 0;	
 	private boolean sendActionDown = false;
-	
-//	@Override
-//	public boolean dispatchTouchEvent(MotionEvent ev) {
-//		final int action = ev.getAction();
-//    	float distanceX = ev.getX() - lastMotionX;
-//    	float distanceY = ev.getY() - lastMotionY0;
-//    	lastMotionX = ev.getX();
-//    	lastMotionY0 = ev.getY();
-//    	switch(action) {
-//	    	case MotionEvent.ACTION_MOVE: {
-//	    		if (Math.abs(distanceY) > Math.abs(distanceX)) {
-//	    			/**
-//	    			 * intercept the motion
-//	    			 */
-//	    			requestDisallowInterceptTouchEvent(true);
-//	    		} 
-////	    		else {
-////	    			/**
-////	    			 * dispatch the motion to it's parent
-////	    			 */
-////	    			return false;
-////	    		}
-//	    		
-//	    	}
-//    	}
-//		return super.dispatchTouchEvent(ev);
-//	}
+	private boolean sendActionDown2 = false;
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
@@ -186,7 +159,11 @@ public class CustomedListView extends ListView {
 			/**
 			 * 未进入缩放的范围，就由listView本身来处理
 			 */
-			Log.i("junjiang2", "customlistview onTouchEvent " + ev.getAction());
+			if (sendActionDown && !sendActionDown2) {
+				sendActionDown2 = true;
+				ev.setAction(MotionEvent.ACTION_DOWN);
+			}
+			Log.i("ScalableImageView", "customlistview onTouchEvent " + ev.getAction());
 			return super.onTouchEvent(ev);
 		}
 		if (!sendActionDown) {
@@ -202,6 +179,7 @@ public class CustomedListView extends ListView {
 		}
 		if (MotionEvent.ACTION_UP == ev.getAction()) {
 			sendActionDown = false;
+			sendActionDown2 = false;
 		}
 		return true;
 	}
@@ -219,25 +197,18 @@ public class CustomedListView extends ListView {
 		final int normalHeight = getHeightAtPosition(0);
 		final int headerTop = mHeader.getTop();
 		final int headerHeight = mHeader.getHeight();
-//		Log.i("junjiang2", String.format("scalable top:%d height:%d normal:%d distance:%d", 
-//				headerTop, headerHeight, normalHeight, distance));
+		Log.i("junjiang2", String.format("scalable top:%d height:%d normal:%d distance:%d", 
+				headerTop, headerHeight, normalHeight, distance));
 		return headerTop == 0 
 				&& (headerHeight == normalHeight && distance >= 0 
 				|| headerHeight > normalHeight);
-	}
-	
-	private void scaleHeaderBy(int distance) {
-		if (!isScalable(distance)) {
-			return;
-		}
-		final int newHeight = (int) (mHeader.getHeight() + distance * 0.5f);
-		scaleHeaderTo(newHeight);
 	}
 	
 	public void scaleHeaderTo(int height) {
 		LayoutParams lParams = (LayoutParams) mHeader.getLayoutParams();
 		lParams.height = height;
 		mHeader.setLayoutParams(lParams);
+		Log.i("ScalableImageView", "scaleHeaderTo " + height + " top=" + mHeader.getTop());
 		mHeader.invalidate();
 	}
 
