@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <android.support.v4.view.ViewPager
+    <com.aj2014.scalableptrview.UnSwappableViewPager
         android:id="@+id/main_page_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

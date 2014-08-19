@@ -54,7 +54,7 @@ public abstract class AbsPtrView extends FrameLayout implements IPtrView {
 	public abstract boolean isOutofRange();
 	
 	@Override
-	public void onPull(int distance) {
+	public void onPull(float distance) {
 		if (mRefreshable) {
 			mStateChanged = !pullToRefresh();
 			mCurState = EPtrState.RELEASE_TO_REFRESH;

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
@@ -75,14 +76,23 @@ public class ScalableImageView extends AbsScalableView {
 		getViewTreeObserver().addOnGlobalLayoutListener(this);
 	}
 
+	private DecelerateInterpolator mInterpolator;
 	@Override
-	public void scaleTo(int distance) {
-		mCurSize = mCurSize + (int) (distance * SCALE_RATE);
+	public void scaleTo(float distance) {
+		if (null == mInterpolator) {
+			mInterpolator = new DecelerateInterpolator();
+		}
+		float rate = mInterpolator.getInterpolation(1f - (float)(mCurSize - mNormalSize) / (mMaxSize - mNormalSize));//mCurSize / mMaxSize);
+		Log.i("ScalableImageView", "scale rate = " + rate * SCALE_RATE);
+		float ratedDist = distance * rate * SCALE_RATE;
+		mCurSize = (int) (mCurSize + ratedDist);// * SCALE_RATE);//(int) (distance * SCALE_RATE);
 		mCurSize = mCurSize < mNormalSize ? mNormalSize : mCurSize;
 		mCurSize = mCurSize > mMaxSize ? mMaxSize : mCurSize;
 		// scale view's height
 		setViewsHeight(mScalableImage, mCurSize);
-		super.scaleTo(distance);
+		if (mMaxSize > mCurSize) {
+			super.scaleTo(distance / (float) (mMaxSize - mNormalSize));
+		}
 	}
 	
 	@Override
@@ -144,12 +154,4 @@ public class ScalableImageView extends AbsScalableView {
 		super.onRefreshComplete();
 	}
 	
-	public void setMarginTop(int margin) {
-		MarginLayoutParams mParams = (MarginLayoutParams) getLayoutParams();
-		mParams.topMargin = margin;
-		setLayoutParams(mParams);
-		Log.i("ScalableImageView", "setMarginTop " + margin);
-		invalidate();
-	}
-
 }

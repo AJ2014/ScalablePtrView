@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -168,20 +169,27 @@ public class PtrLoadingView extends AbsPtrView {
 	}
 	
 	
+	private DecelerateInterpolator mInterpolator;
 	@Override
-	public void onPull(int distance) {
-		mCurMargin = (int) (mCurMargin + distance);
+	public void onPull(float distance) {
+		if (null == mInterpolator) {
+			mInterpolator = new DecelerateInterpolator();
+		}
+		float normalizedDist = distance * (mMaxMargin - mNormalMargin);
+		float rate = mInterpolator.getInterpolation(1f - (float)mCurMargin / (mMaxMargin - mNormalMargin));
+		Log.i("PtrLoadingView", "pull rate = " + rate + ", normaldist=" + normalizedDist
+				+ ", factor =" + (1f - (float)mCurMargin / (mMaxMargin - mNormalMargin))
+				+ ", dist =" + normalizedDist * rate);
+		mCurMargin = (int) (mCurMargin + normalizedDist * rate);
 		mCurMargin = mCurMargin < mNormalMargin ? mNormalMargin : mCurMargin;
 		mCurMargin = mCurMargin > mMaxMargin ? mMaxMargin : mCurMargin;
 		// reset view's margin
 		setMarginLayoutParams(mCurMargin);
-		// ÈôÒÆ¶¯·¶Î§³¬³öË¢ÐÂ·¶Î§
 		if (mCurMargin >= mRefreshMargin) {
 			mRefreshable = true;
 		} else {
 			mRefreshable = false;
 		}
-		
 		super.onPull(distance);
 	}
 	
@@ -230,10 +238,11 @@ public class PtrLoadingView extends AbsPtrView {
 		final int margin = -getHeight();
 		mNormalMargin = (int) (-scaleDistance / 4f);
 		mNormalMargin = mNormalMargin > margin ? margin : mNormalMargin;
-		mRefreshMargin = -mNormalMargin;
-		mMaxMargin = (int) (-mNormalMargin * 2);
+		mRefreshMargin = (int) (scaleDistance / 8f);//-mNormalMargin;
+		mMaxMargin = (int) (scaleDistance / 4f);//(int) (-mNormalMargin * 2);
 		mCurMargin = mNormalMargin;
-		Log.i("junjiang2", String.format("normal:%d refresh:%d max:%d", mNormalMargin, mRefreshMargin, mMaxMargin));
+		Log.i("PtrLoadingView", String.format("normal:%d refresh:%d max:%d", mNormalMargin, mRefreshMargin, mMaxMargin));
+		setMarginLayoutParams(mCurMargin);
 	}
 
 }

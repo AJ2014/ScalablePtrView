@@ -7,10 +7,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 /**
  * view container with scalableView header
@@ -42,9 +44,25 @@ public class ScalablePtrView extends RelativeLayout {
 		mTouchSlope = ViewConfiguration.get(context).getScaledTouchSlop();
 		
 		mScalableView = new ScalableImageView(context, attrs);
+		mScalableView.setId(R.id.personcenter_header_scalable_imageview);
 		LayoutParams gParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		gParams.addRule(ALIGN_PARENT_TOP);
 		addView(mScalableView, 0, gParams);
+	}
+	
+	/**
+	 * add custom header view
+	 * @param inflatedView
+	 */
+	public void addCustomedHeader(View inflatedView) {
+		LayoutParams gParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		gParams.addRule(RelativeLayout.ALIGN_BOTTOM, mScalableView.getId());
+		addView(inflatedView, 1, gParams);
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		return false;
 	}
 	
 	float mLastMotionY = 0f;
@@ -127,7 +145,7 @@ public class ScalablePtrView extends RelativeLayout {
 	 * 数据刷新结束回调
 	 */
 	public void onRefreshComplete() {
-		if (null != mScalableView) {
+		if (null != mScalableView && isRecoverableOnRefreshComplete()) {
 			Log.i("ScalableImageView", "onRefreshComplete ----");
 			mScalableView.onRefreshComplete();
 		}
@@ -138,9 +156,15 @@ public class ScalablePtrView extends RelativeLayout {
 	 * @param margin
 	 */
 	public void setScalableViewMarginTop(int margin) {
-		if (null != mScalableView) {
-			mScalableView.setMarginTop(margin);
-		}
+		setMarginTop(margin);
+	}
+	
+	public void setMarginTop(int margin) {
+		MarginLayoutParams mParams = (MarginLayoutParams) getLayoutParams();
+		mParams.topMargin = margin;
+		setLayoutParams(mParams);
+		Log.i("ScalableImageView", "setMarginTop " + margin);
+		invalidate();
 	}
 	
 	/**
@@ -179,6 +203,10 @@ public class ScalablePtrView extends RelativeLayout {
         mCurTopMargin = margin;
         
     }
+	
+	private boolean isRecoverableOnRefreshComplete() {
+		return mCurTopMargin == mMaxTopMargin;
+	}
 	
 	public boolean isRefreshing() {
 		if (null != mScalableView) {

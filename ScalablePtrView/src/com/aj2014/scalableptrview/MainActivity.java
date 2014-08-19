@@ -39,7 +39,7 @@ public class MainActivity extends FragmentActivity
     /**
      * content container
      */
-    ViewPager mViewPager;
+    UnSwappableViewPager mViewPager;
     /**
      * tab view container
      */
@@ -89,7 +89,7 @@ public class MainActivity extends FragmentActivity
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        mViewPager = (ViewPager) findViewById(R.id.main_page_container);
+        mViewPager = (UnSwappableViewPager) findViewById(R.id.main_page_container);
         mSPtrView = (ScalablePtrView) findViewById(R.id.scalable_ptr_view);
         mTabGroup = (LinearLayout) findViewById(R.id.tab_container);
         
@@ -137,7 +137,9 @@ public class MainActivity extends FragmentActivity
 		mSPtrView.postDelayed(new Runnable() {
 			@Override
 			public void run() {
+				mViewPager.enableSwap(false);
 				mSPtrView.onRefreshComplete();
+				mViewPager.enableSwap(true);
 			}
 		}, 2000l);
 	}

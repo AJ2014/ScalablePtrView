@@ -7,8 +7,9 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
-public abstract class AbsScalableView extends FrameLayout implements IScalableView, OnGlobalLayoutListener {
+public abstract class AbsScalableView extends RelativeLayout implements IScalableView, OnGlobalLayoutListener {
 	
 	/**
 	 * pull to refresh header view
@@ -30,14 +31,15 @@ public abstract class AbsScalableView extends FrameLayout implements IScalableVi
 		mPtrView = new PtrLoadingView(context, attrs);
 		// add the ptr child view
 		LayoutParams gParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		gParams.gravity = Gravity.CENTER_HORIZONTAL;
+		gParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		gParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 		addView(mPtrView, 0, gParams);
 		// reset ptr child view
 		mPtrView.doReset();
 	}
 	
 	@Override
-	public void scaleTo(int distance) {
+	public void scaleTo(float distance) {
 		if (null != mPtrView) {
 			mPtrView.onPull(distance);
 			mRefresh = mPtrView.releaseToRefresh();
